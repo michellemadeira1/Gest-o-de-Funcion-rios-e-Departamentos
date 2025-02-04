@@ -50,7 +50,16 @@ public class FuncionarioService {
     }
 	
 	
-	public ResponseEntity<Funcionario> AtualizarFuncionario (Long id, Funcionario funcionarioatualizado){
+	public ResponseEntity<List<Funcionario>> buscarPorNome(String nome) {
+        List<Funcionario> funcionario = funcionarioRepository.findAllByNomeContainingIgnoreCase(nome);
+        if (funcionario.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(funcionario);
+    }
+	
+	
+	public  ResponseEntity<Funcionario> AtualizarFuncionario (Long id, Funcionario funcionarioatualizado){
 		 Optional<Funcionario> funcionarioOptional = funcionarioRepository.findById(id);
 		 if(funcionarioOptional.isPresent()) {
 			 Funcionario funcionario = funcionarioOptional.get();

@@ -11,4 +11,6 @@ import com.cadastro.funcionario.model.Funcionario;
 public interface FuncionarioRepository extends JpaRepository<Funcionario, Long>{
 	List<Funcionario>findByNome(String nome);
 
+	List<Funcionario> findAllByNomeContainingIgnoreCase(String nome);
+
 }
