@@ -2,6 +2,9 @@ package com.cadastro.funcionario.model;
 
 import java.util.Date;
 
+import jakarta.persistence.Entity;
+
+@Entity
 public class Departamento {
 
 	private Long id;
