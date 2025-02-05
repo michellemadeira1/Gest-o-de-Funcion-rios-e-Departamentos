@@ -11,40 +11,40 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.cadastro.funcionario.model.Departamento;
+import com.cadastro.funcionario.service.DepartamentoService;
 
-import com.cadastro.funcionario.model.Funcionario;
-import com.cadastro.funcionario.service.FuncionarioService;
+
 
 @RestController
-@RequestMapping("/funcionario")
-public class FuncionarioController {
-
-	@Autowired
-	private FuncionarioService funcionarioService;
+@RequestMapping("/departamento")
+public class DepartamentoController {
 	
+	@Autowired
+	private DepartamentoService departamentoService;
+
 	@GetMapping
-	public ResponseEntity<List<Funcionario>> listarTodos() {
-        return funcionarioService.listarFuncionarios(null);
+	public ResponseEntity<List<Departamento>> listarTodos() {
+        return departamentoService.listarDepartamento();
     }
     
 	@PostMapping
-	public ResponseEntity<Funcionario> salvar(@RequestBody Funcionario funcionario) {
-        return funcionarioService.salvar(funcionario);
+	public ResponseEntity<Departamento> salvar(@RequestBody Departamento departamento) {
+        return departamentoService.salvar(departamento);
     }
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<Funcionario> buscarPorId(@PathVariable Long id) {
-        return funcionarioService.buscarPorId(id);
+	public ResponseEntity<Departamento> buscarPorId(@PathVariable Long id) {
+        return departamentoService.buscarPorId(id);
     }
 	
 	@GetMapping("/nome/{nome}")
-	 public ResponseEntity<List<Funcionario>> buscarPorNome(@PathVariable String nome) {
-	        return funcionarioService.buscarPorNome(nome);
+	 public ResponseEntity<List<Departamento>> buscarPorNome(@PathVariable String nome) {
+	        return departamentoService.buscarPorNome(nome);
 	    }
 	 
 	@DeleteMapping("/{id}")
 	 public ResponseEntity<Void> deletar(@PathVariable Long id){
-			return funcionarioService.deletar(id);
+			return departamentoService.deletar(id);
 		}
-
 }

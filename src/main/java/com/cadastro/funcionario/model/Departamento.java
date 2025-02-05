@@ -2,28 +2,53 @@ package com.cadastro.funcionario.model;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class Departamento {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@NotNull
 	private String nome;
-	private String descriacao;
+	
+	@NotNull
+	private String descricao;
+	
+	@NotNull
 	private Date dataCriacao;
+	
+	@NotNull
 	private Date dataAtualizacao;
+	
+	
+	@ManyToOne
+	@JsonIgnore
+	@JoinColumn(name = "Funcionario_id")
+	private Funcionario funcionario;
 	
 	
 	public Departamento() {}
 	
 	
-	public Departamento(Long id, String nome, String descriacao, Date dataCriacao, Date dataAtualizacao) {
+	public Departamento(Long id, String nome, String descriacao, Date dataCricao, Date dataAtualizacao,Funcionario funcionario) {
 		super();
 		this.id = id;
 		this.nome = nome;
-		this.descriacao = descriacao;
+		this.descricao = descriacao;
 		this.dataCriacao = dataCriacao;
 		this.dataAtualizacao = dataAtualizacao;
+		this.funcionario = funcionario;
 	}
 
 
@@ -47,13 +72,13 @@ public class Departamento {
 	}
 
 
-	public String getDescriacao() {
-		return descriacao;
+	public String getDescricao() {
+		return descricao;
 	}
 
 
-	public void setDescriacao(String descriacao) {
-		this.descriacao = descriacao;
+	public void setDescricao(String descriacao) {
+		this.descricao = descriacao;
 	}
 
 
@@ -74,6 +99,16 @@ public class Departamento {
 
 	public void setDataAtualizacao(Date dataAtualizacao) {
 		this.dataAtualizacao = dataAtualizacao;
+	}
+
+
+	public Funcionario getFuncionario() {
+		return funcionario;
+	}
+
+
+	public void setFuncionario(Funcionario funcionario) {
+		this.funcionario = funcionario;
 	}
 	
 	

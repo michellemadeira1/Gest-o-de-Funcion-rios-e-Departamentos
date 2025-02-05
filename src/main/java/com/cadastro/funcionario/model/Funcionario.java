@@ -1,29 +1,60 @@
 package com.cadastro.funcionario.model;
 
 import java.util.Date;
+import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class Funcionario {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
+	@NotNull
 	private String nome;
+	
+	@NotNull
 	private String cpf;
+	
+	@NotNull
+	 @Email
 	private String email;
+	
+	@NotNull
 	private String cargo;
+	
+	@NotNull
 	private String salario;
+	
+	@NotNull
 	private Date dataContratacao;
+	
+	@NotNull
 	private Date dataAtualizacao;
 	
 	
+	@OneToMany(mappedBy = "funcionario", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnoreProperties("funcionario")
+	 private List<Departamento> departamento;
 	
-	
+	 
 	public Funcionario() {}
 	
 	
 	public Funcionario(Long id, String nome, String cpf, String email, String cargo, String salario,
-			Date dataContratacao, Date dataAtualizacao) {
+			Date dataContratacao, Date dataAtualizacao, List<Departamento> departamento) {
 		super();
 		this.id = id;
 		this.nome = nome;
@@ -33,6 +64,7 @@ public class Funcionario {
 		this.salario = salario;
 		this.dataContratacao = dataContratacao;
 		this.dataAtualizacao = dataAtualizacao;
+		this.departamento = departamento;
 	}
 
 
@@ -113,6 +145,16 @@ public class Funcionario {
 
 	public void setDataAtualizacao(Date dataAtualizacao) {
 		this.dataAtualizacao = dataAtualizacao;
+	}
+
+
+	public List<Departamento> getDepartamento() {
+		return departamento;
+	}
+
+
+	public void setDepartamento(List<Departamento> departamento) {
+		this.departamento = departamento;
 	}
 	
 	

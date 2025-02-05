@@ -13,78 +13,76 @@ import com.cadastro.funcionario.repository.FuncionarioRepository;
 
 @Service
 public class FuncionarioService {
-	
-	@Autowired
-	private FuncionarioRepository funcionarioRepository;
-	
-	
-	
-	public ResponseEntity<List<Funcionario>> listarFuncionarios(Funcionario funcionario){
-		List<Funcionario> funcionarioExist = funcionarioRepository.findByNome(funcionario.getNome());
-		
-		if(funcionarioExist.isEmpty()) {
-			return ResponseEntity.status(406).build();
-		}else {
-			return ResponseEntity.status(200).body(funcionarioExist);
-		}
-	}
-	
-	
-	public ResponseEntity<Funcionario> salvar(Funcionario funcionario) {
+    
+    @Autowired
+    private FuncionarioRepository funcionarioRepository;
+    
+    
+    public ResponseEntity<List<Funcionario>> listarFuncionarios(Funcionario funcionario){
+        List<Funcionario> funcionariosExistentes = funcionarioRepository.findByNome(funcionario.getNome());
+        
+        if(funcionariosExistentes.isEmpty()) {
+            return ResponseEntity.noContent().build(); 
+        } else {
+            return ResponseEntity.ok(funcionariosExistentes);  
+        }
+    }
+    
+    
+    public ResponseEntity<Funcionario> salvar(Funcionario funcionario) {
         if (funcionario.getId() != null && funcionarioRepository.findById(funcionario.getId()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
         Funcionario novoFuncionario = funcionarioRepository.save(funcionario);
-        return ResponseEntity.ok(novoFuncionario);
+        return ResponseEntity.ok(novoFuncionario);  
     }
-	
-	
-	public ResponseEntity<Funcionario> buscarPorId(Long id) {
+    
+    
+    public ResponseEntity<Funcionario> buscarPorId(Long id) {
         Optional<Funcionario> funcionarioOptional = funcionarioRepository.findById(id);
         if (funcionarioOptional.isPresent()) {
             return ResponseEntity.ok(funcionarioOptional.get()); 
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();  
         }
     }
-	
-	
-	public ResponseEntity<List<Funcionario>> buscarPorNome(String nome) {
-        List<Funcionario> funcionario = funcionarioRepository.findAllByNomeContainingIgnoreCase(nome);
-        if (funcionario.isEmpty()) {
-            return ResponseEntity.noContent().build();
+    
+    
+    public ResponseEntity<List<Funcionario>> buscarPorNome(String nome) {
+        List<Funcionario> funcionarios = funcionarioRepository.findAllByNomeContainingIgnoreCase(nome);
+        if (funcionarios.isEmpty()) {
+            return ResponseEntity.noContent().build();  
         }
-        return ResponseEntity.ok(funcionario);
+        return ResponseEntity.ok(funcionarios);  
     }
-	
-	
-	public  ResponseEntity<Funcionario> AtualizarFuncionario (Long id, Funcionario funcionarioatualizado){
-		 Optional<Funcionario> funcionarioOptional = funcionarioRepository.findById(id);
-		 if(funcionarioOptional.isPresent()) {
-			 Funcionario funcionario = funcionarioOptional.get();
-			 funcionario.setNome(funcionarioatualizado.getNome());
-			 funcionario.setCpf(funcionarioatualizado.getCpf());
-			 funcionario.setEmail(funcionarioatualizado.getEmail());
-			 funcionario.setCargo(funcionarioatualizado.getCargo());
-			 funcionario.setSalario(funcionarioatualizado.getSalario());
-			 funcionario.setDataContratacao(funcionarioatualizado.getDataContratacao());
-			 funcionario.setDataAtualizacao(funcionarioatualizado.getDataAtualizacao());
-			 Funcionario funcionarioatualizadoSalvo = funcionarioRepository.save(funcionario);
-		        return ResponseEntity.ok(funcionarioatualizadoSalvo);
-		 }else {
-		        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		    }		
-	}
-	
-	
-	public ResponseEntity<Object> deletar(Long id) {
-	    Optional<Funcionario> idExistente = funcionarioRepository.findById(id);
-	    if (idExistente.isEmpty()) {
-	        return ResponseEntity.status(400).build();
-	    } else {
-	        funcionarioRepository.deleteById(id);
-	        return ResponseEntity.status(200).build();
-	    }
-	}
+    
+    
+    public ResponseEntity<Funcionario> atualizarFuncionario(Long id, Funcionario funcionarioAtualizado){
+        Optional<Funcionario> funcionarioOptional = funcionarioRepository.findById(id);
+        if(funcionarioOptional.isPresent()) {
+            Funcionario funcionario = funcionarioOptional.get();
+            funcionario.setNome(funcionarioAtualizado.getNome());
+            funcionario.setCpf(funcionarioAtualizado.getCpf());
+            funcionario.setEmail(funcionarioAtualizado.getEmail());
+            funcionario.setCargo(funcionarioAtualizado.getCargo());
+            funcionario.setSalario(funcionarioAtualizado.getSalario());
+            funcionario.setDataContratacao(funcionarioAtualizado.getDataContratacao());
+            funcionario.setDataAtualizacao(funcionarioAtualizado.getDataAtualizacao());
+            Funcionario funcionarioAtualizadoSalvo = funcionarioRepository.save(funcionario);
+            return ResponseEntity.ok(funcionarioAtualizadoSalvo);  
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();  
+        }
+    }
+    
+   
+    public ResponseEntity<Void> deletar(Long id) {
+        if (!funcionarioRepository.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();  
+        }
+
+        funcionarioRepository.deleteById(id); 
+        return ResponseEntity.noContent().build();  
+    }
 }

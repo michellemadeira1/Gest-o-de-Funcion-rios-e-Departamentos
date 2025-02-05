@@ -1,7 +1,6 @@
 package com.cadastro.funcionario.service;
 
 import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,56 +14,65 @@ public class DepartamentoService {
 	@Autowired
 	private DepartamentoRepository departamentoRepository;
 	
-	public ResponseEntity<List<Departamento>> listarFuncionarios(Departamento departamento){
-		List<Departamento> departamentoExist = departamentoRepository.findByNome(departamento.getNome());
+	
+	public ResponseEntity<List<Departamento>> listarDepartamento() {
+        List<Departamento> departamentos = departamentoRepository.findAll();
 		
-		if(departamentoExist.isEmpty()) {
-			return ResponseEntity.status(406).build();
-		}else {
-			return ResponseEntity.status(200).body(departamentoExist);
-		}
-	}
+        if (departamentos.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(departamentos);
+    }
+	
 	
 	public ResponseEntity<Departamento> salvar(Departamento departamento) {
-        if (departamento.getId() != null && departamentoRepository.findById(departamento.getId()).isPresent()) {
+		if (departamento.getId() != null && departamentoRepository.existsById(departamento.getId())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
         Departamento novoDepartamento = departamentoRepository.save(departamento);
-        return ResponseEntity.ok(novoDepartamento);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novoDepartamento);
     }
 	
-	public ResponseEntity<Departamento> buscarPorId(Long id) {
-        Optional<Departamento> departamentoOptional = departamentoRepository.findById(id);
-        if (departamentoOptional.isPresent()) {
-            return ResponseEntity.ok(departamentoOptional.get()); 
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+	
+	 public ResponseEntity<Departamento> buscarPorId(Long id) {
+	        return departamentoRepository.findById(id)
+	                .map(ResponseEntity::ok)
+	                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+	    }
+	 
+	 
+
+	public ResponseEntity<List<Departamento>> buscarPorNome(String nome) {
+        List<Departamento> departamento = departamentoRepository.findAllByNomeContainingIgnoreCase(nome);
+        if (departamento.isEmpty()) {
+            return ResponseEntity.noContent().build();
         }
+        return ResponseEntity.ok(departamento);
+    }
+	
+	
+	public ResponseEntity<Departamento> atualizarDepartamento(Long id, Departamento departamentoAtualizado) {
+        return departamentoRepository.findById(id)
+                .map(departamento -> {
+                    departamento.setNome(departamentoAtualizado.getNome());
+                    departamento.setDescricao(departamentoAtualizado.getDescricao()); // Corrigido
+                    departamento.setDataCriacao(departamentoAtualizado.getDataCriacao());
+                    departamento.setDataAtualizacao(departamentoAtualizado.getDataAtualizacao());
+
+                    Departamento atualizado = departamentoRepository.save(departamento);
+                    return ResponseEntity.ok(atualizado);
+                })
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
-	public  ResponseEntity<Departamento> AtualizarDepartamento (Long id, Departamento departamentoatualizado){
-		 Optional<Departamento> departamentoOptional = departamentoRepository.findById(id);
-		 if(departamentoOptional.isPresent()) {
-			 Departamento departamento = departamentoOptional.get();
-			 departamento.setNome( departamentoatualizado.getNome());
-			 departamento.setDescriacao(departamentoatualizado.getDescriacao());
-			 departamento.setDataCriacao(departamentoatualizado.getDataCriacao());
-			 departamento.setDataAtualizacao(departamentoatualizado.getDataAtualizacao());
-			 Departamento  departamentoatualizadoSalvo =  departamentoRepository.save( departamento);
-		        return ResponseEntity.ok( departamentoatualizadoSalvo);
-		 }else {
-		        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		    }		
-	}
 	
-	public ResponseEntity<Object> deletar(Long id) {
-	    Optional<Departamento> idExistente = departamentoRepository.findById(id);
-	    if (idExistente.isEmpty()) {
-	        return ResponseEntity.status(400).build();
-	    } else {
+	 public ResponseEntity<Void> deletar(Long id) {
+	        if (!departamentoRepository.existsById(id)) {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+	        }
+
 	        departamentoRepository.deleteById(id);
-	        return ResponseEntity.status(200).build();
+	        return ResponseEntity.noContent().build();
 	    }
-	}
 }
